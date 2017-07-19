@@ -19,6 +19,7 @@ static NSString *photoListCell = @"photoListCell";
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @property (nonatomic,strong) FMDatabase *database;
 @property (nonatomic,strong) NSMutableArray *photoArray;
+@property (nonatomic,copy) NSString *localizedTitle;
 @end
 
 @implementation PhotoListViewController
@@ -121,6 +122,8 @@ static NSString *photoListCell = @"photoListCell";
 //参数：图片选择器  字典参数
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info{
     
+    NSLog(@"---%@",picker.navigationItem.title);
+    
     //通过key值获取到图片
     
     UIImage * image =info[UIImagePickerControllerOriginalImage];
@@ -157,26 +160,34 @@ static NSString *photoListCell = @"photoListCell";
         PHFetchResult *collectonResuts = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAny options:[PHFetchOptions new]] ;
         [collectonResuts enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             PHAssetCollection *assetCollection = obj;
-            NSLog(@"---%@",assetCollection.localizedTitle);
-            if ([assetCollection.localizedTitle isEqualToString:@"All Photos"])  {
+           
+            if ([assetCollection.localizedTitle isEqualToString:self.localizedTitle])  {
                 PHFetchResult *assetResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:[PHFetchOptions new]];
                 [assetResult enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                     
                     NSString *objString = [NSString stringWithFormat:@"%@",obj];
-                    
+
                     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
                         //获取相册的最后一张照
                         if ([objString rangeOfString:imageID].location != NSNotFound) {
+                         
                             [PHAssetChangeRequest deleteAssets:@[obj]];
                         }
+                    
                     } completionHandler:^(BOOL success, NSError *error) {
-                        NSLog(@"Error: %@", error);
+                      //  NSLog(@"Error: %@", error);
                     }];
                 }];
             }
         }];
     
     }
+}
+
+- (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated{
+
+    self.localizedTitle = viewController.title;
+    
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
