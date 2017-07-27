@@ -11,12 +11,14 @@
 #import "FMDB.h"
 #import "PhotoListViewController.h"
 
+
 static NSString *PhotoCell = @"PhotoCell";
 
 @interface PhotoViewController ()<UICollectionViewDelegate,UICollectionViewDataSource>
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @property (nonatomic,strong) NSMutableArray *photoArray;
 @property (nonatomic,strong) FMDatabase *database;
+
 @end
 
 @implementation PhotoViewController
@@ -52,7 +54,7 @@ static NSString *PhotoCell = @"PhotoCell";
     UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc]init];
     //  layout.itemSize = CGSizeMake([UIScreen mainScreen].bounds.size.width / 2 -3, 255);
     layout.minimumInteritemSpacing = 0;
-    layout.minimumLineSpacing = 1; //上下的间距 可以设置0看下效果
+    layout.minimumLineSpacing = 0; //上下的间距 可以设置0看下效果
     layout.sectionInset = UIEdgeInsetsMake(0.f, 0, 0.f, 0);
     layout.sectionHeadersPinToVisibleBounds = YES;
     
@@ -80,8 +82,6 @@ static NSString *PhotoCell = @"PhotoCell";
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
     
- //   NSUInteger count = [self.database intForQuery:@"select count(*) from photo"];
-    
         return self.photoArray.count ;
 }
 
@@ -96,13 +96,13 @@ static NSString *PhotoCell = @"PhotoCell";
         cell = [[PhotoCollectionViewCell alloc] init];
     }
     cell.titleLabel.text = self.photoArray[indexPath.row];
+  //  cell.imageView.image = self.imageArray[indexPath.row];
     return cell;
-    
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath{
     
-    return CGSizeMake([UIScreen mainScreen].bounds.size.width / 2, [UIScreen mainScreen].bounds.size.width / 2);
+    return CGSizeMake(scrW / 2, scrW / 2);
 }
 
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section{

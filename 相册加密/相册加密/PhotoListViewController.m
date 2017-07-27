@@ -11,8 +11,8 @@
 #import "FMDB.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <Photos/Photos.h>
-#import "MJPhoto.h"
-#import "MJPhotoBrowser.h"
+#import "PhotosViewController.h"
+
 static NSString *photoListCell = @"photoListCell";
 
 @interface PhotoListViewController () <UIImagePickerControllerDelegate,UINavigationControllerDelegate,UICollectionViewDelegate,UICollectionViewDataSource>
@@ -87,29 +87,21 @@ static NSString *photoListCell = @"photoListCell";
     
     UIAlertAction *photoAction = [UIAlertAction actionWithTitle:@"相册" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         
-        //定义图片选择器
+        PhotosViewController *vc = [[PhotosViewController alloc] init];
+        [self.navigationController pushViewController:vc animated:YES];
+        vc.clickImageBlock = ^(NSMutableArray *array) {
+          
+            [self.photoArray addObjectsFromArray:array];
+            [self.collectionView reloadData];
+            
+        };
+
         
-        UIImagePickerController * picker = [[UIImagePickerController alloc]init];
+    }];
+    
+    UIAlertAction *takePhoto = [UIAlertAction actionWithTitle:@"拍照" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         
-        //设置选取的照片是否可编辑
-      //  picker.allowsEditing = YES;
-        //判断系统是否允许选择 相册
         
-        if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-            
-            //图片选择是相册（图片来源自相册）
-            
-            picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-            
-            //设置代理
-            
-            picker.delegate = self;
-            
-            //模态显示界面
-            
-            [self presentViewController:picker animated:YES completion:nil];
-            
-        }
         
     }];
     
@@ -214,7 +206,7 @@ static NSString *photoListCell = @"photoListCell";
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath{
     
-    return CGSizeMake([UIScreen mainScreen].bounds.size.width / 2, [UIScreen mainScreen].bounds.size.width / 2);
+    return CGSizeMake(scrW / 2, scrW / 2);
 }
 
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section{
@@ -226,18 +218,18 @@ static NSString *photoListCell = @"photoListCell";
     photoListCollectionViewCell *cell = (photoListCollectionViewCell *)[self.collectionView cellForItemAtIndexPath:indexPath];
     
     NSMutableArray *photos = [NSMutableArray array];
-    for (int i = 0; i<self.photoArray.count; i++) {
-        MJPhoto *photo = [[MJPhoto alloc] init];
-        photo.image = self.photoArray[i]; // 图片路径
-        photo.srcImageView = cell.imageView; // 来源于哪个UIImageView
-        [photos addObject:photo];
-    }
-    
-    // 2.显示相册
-    MJPhotoBrowser *browser = [[MJPhotoBrowser alloc] init];
-    browser.currentPhotoIndex = indexPath.row; // 弹出相册时显示的第一张图片是？
-    browser.photos = photos; // 设置所有的图片
-    [browser show];
+//    for (int i = 0; i<self.photoArray.count; i++) {
+//        MJPhoto *photo = [[MJPhoto alloc] init];
+//        photo.image = self.photoArray[i]; // 图片路径
+//        photo.srcImageView = cell.imageView; // 来源于哪个UIImageView
+//        [photos addObject:photo];
+//    }
+//    
+//    // 2.显示相册
+//    MJPhotoBrowser *browser = [[MJPhotoBrowser alloc] init];
+//    browser.currentPhotoIndex = indexPath.row; // 弹出相册时显示的第一张图片是？
+//    browser.photos = photos; // 设置所有的图片
+//    [browser show];
 
     
 }
